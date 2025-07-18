@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert'; // Necessario per codificare i dati in JSON
-import 'home_page.dart'; // Importiamo il file che contiene HomePage
+import 'dart:convert';
+import 'home_page.dart'; // Contiene HomePage
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,60 +16,100 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  // NOTA: '10.0.2.2' è l'IP speciale per raggiungere il localhost del tuo PC
-  // dall'emulatore Android. Se esegui l'app sul web, dovrai usare 'localhost'.
-  final String _apiUrl = 'http://localhost:8080/api/auth/login';
+  final String _apiBaseUrl = 'http://localhost:8080'; // Per emulatore Android
 
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    // Inserisci qui il Client ID Web per l'esecuzione su web
+    // clientId: 'IL_TUO_ID_CLIENT_WEB.apps.googleusercontent.com',
+    scopes: ['email'],
+  );
+
+  // -- LOGICA PER IL LOGIN TRADIZIONALE --
   Future<void> _login() async {
-    // Se stiamo già caricando, non fare nulla
     if (_isLoading) return;
-
-    // 1. Mostra l'indicatore di caricamento
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
-      // 2. Prepara la richiesta HTTP
       final response = await http.post(
-        Uri.parse(_apiUrl),
+        Uri.parse('$_apiBaseUrl/api/auth/login'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        // Codifica i dati dei TextField in un corpo JSON
         body: jsonEncode(<String, String>{
           'username': _usernameController.text,
           'password': _passwordController.text,
         }),
       );
 
-      // 3. Controlla la risposta del server
       if (response.statusCode == 200) {
-        // Successo! Naviga alla HomePage
-        // Usiamo pushReplacement per non permettere all'utente di tornare alla login
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        );
+        _navigateToHome();
       } else {
-        // Fallimento (es. 401 Unauthorized)
-        // Mostra un messaggio di errore
         final responseBody = jsonDecode(response.body);
         _showErrorSnackbar(responseBody['message'] ?? 'Credenziali non valide');
       }
     } catch (e) {
-      // Errore di connessione o altro
-      print('Errore durante il login: $e');
-      _showErrorSnackbar(
-        'Errore di connessione. Controlla il server e la rete.',
-      );
+      _showErrorSnackbar('Errore di connessione. Controlla il server.');
     } finally {
-      // 4. Nascondi l'indicatore di caricamento, in ogni caso
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  // -- NUOVO: LOGICA PER IL LOGIN CON GOOGLE --
+  Future<void> _signInWithGoogle() async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        // L'utente ha annullato il popup
+        if (mounted) setState(() => _isLoading = false);
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final String? idToken = googleAuth.idToken;
+
+      if (idToken == null) {
+        _showErrorSnackbar("Impossibile ottenere il token da Google.");
+        if (mounted) setState(() => _isLoading = false);
+        return;
+      }
+
+      // Invia il token al nostro backend per la validazione
+      final response = await http.post(
+        Uri.parse('$_apiBaseUrl/api/auth/google'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{'idToken': idToken}),
+      );
+
+      if (response.statusCode == 200) {
+        // Il backend ha validato il token e ci ha loggato
+        // In un'app reale, qui salveremmo il JWT ricevuto dal backend
+        _navigateToHome();
+      } else {
+        final responseBody = jsonDecode(response.body);
+        _showErrorSnackbar(
+          responseBody['message'] ?? 'Errore durante la validazione del token.',
+        );
+        await _googleSignIn
+            .signOut(); // Logout da Google in caso di errore del nostro backend
+      }
+    } catch (error) {
+      _showErrorSnackbar("Errore durante l'accesso con Google.");
+      print(error);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _navigateToHome() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const HomePage()),
+    );
   }
 
   void _showErrorSnackbar(String message) {
@@ -80,27 +121,51 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(labelText: 'Username'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password'),
-            ),
-            const SizedBox(height: 20),
-            _isLoading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(onPressed: _login, child: const Text('Login')),
-          ],
+      appBar: AppBar(title: const Text('Smart Wallet - Login')),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextField(
+                controller: _usernameController,
+                decoration: const InputDecoration(
+                  labelText: 'Username',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              if (_isLoading)
+                const Center(child: CircularProgressIndicator())
+              else ...[
+                ElevatedButton(onPressed: _login, child: const Text('Login')),
+                const SizedBox(height: 12),
+                ElevatedButton.icon(
+                  icon: Image.asset(
+                    'assets/images/google-logo.png',
+                    height: 24.0,
+                  ),
+                  label: const Text('Accedi con Google'),
+                  onPressed: _signInWithGoogle,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );

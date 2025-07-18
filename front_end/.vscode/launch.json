@@ -1,0 +1,41 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "front_end",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "front_end (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "front_end (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "Flutter (web)", // Puoi dare il nome che preferisci
+            "request": "launch",
+            "type": "dart",
+            // Aggiungi questa sezione "args"
+            "args": [
+                "--web-port",
+                "8000" // Scegli la porta che preferisci, es. 8000
+            ]
+        },
+        {
+            "name": "Flutter (mobile)",
+            "request": "launch",
+            "type": "dart"
+            // Nota: questa configurazione non ha 'args', quindi non si applica agli emulatori
+        }
+    ]
+}

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'home_page.dart'; // Assumendo che la home page sia in un file separato
+// Assumendo che la home page sia in un file separato
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

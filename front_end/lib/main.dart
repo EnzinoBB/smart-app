@@ -1,33 +1,63 @@
-// Importa il pacchetto principale di Flutter per i widget Material Design.
 import 'package:flutter/material.dart';
-import 'login_page.dart';
+import 'package:frontend/home_page.dart';
+import 'package:frontend/login_page.dart';
+import 'package:frontend/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
-// Il punto di ingresso principale dell'applicazione.
 void main() {
-  // Avvia l'app Flutter eseguendo la classe MyApp.
   runApp(const MyApp());
 }
 
-// MyApp è il widget radice dell'intera applicazione.
 class MyApp extends StatelessWidget {
-  // Costruttore per il widget MyApp.
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // MaterialApp è il widget che imposta le basi per un'app Material Design.
-    return MaterialApp(
-      // Rimuoviamo il banner "DEBUG" in alto a destra.
-      debugShowCheckedModeBanner: false,
-      title: 'Smart Wallet',
-      theme: ThemeData(
-        // Definiamo il tema dell'app, partendo da un colore base.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        // Abilitiamo Material 3 per un look & feel moderno.
-        useMaterial3: true,
+    // Il ChangeNotifierProvider rende l'AuthService disponibile in tutta l'app
+    return ChangeNotifierProvider(
+      create: (ctx) => AuthService(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Smart Wallet',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+        ),
+        home: const AuthWrapper(),
       ),
-      // La schermata iniziale (home) della nostra app sarà HomePage.
-      home: const LoginPage(), // Sostituisci HomePage con LoginPage
+    );
+  }
+}
+
+// Questo widget funge da "guardia". Controlla lo stato di autenticazione
+// e mostra la pagina di login o la home page di conseguenza.
+class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    // All'avvio, chiediamo all'AuthService di provare un login automatico
+    Provider.of<AuthService>(context, listen: false).tryAutoLogin();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Il Consumer ascolta le notifiche dell'AuthService e si ricostruisce
+    // quando lo stato di autenticazione cambia (login/logout).
+    return Consumer<AuthService>(
+      builder: (context, authService, child) {
+        if (authService.isAuthenticated) {
+          return const HomePage();
+        } else {
+          return const LoginPage();
+        }
+      },
     );
   }
 }

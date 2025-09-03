@@ -7,25 +7,37 @@
         {
             "name": "front_end",
             "request": "launch",
+            "toolArgs": [
+                "--dart-define-from-file=.env"
+            ],
             "type": "dart"
+            
         },
         {
             "name": "front_end (profile mode)",
             "request": "launch",
             "type": "dart",
+            "toolArgs": [
+                "--dart-define-from-file=.env"
+            ],
             "flutterMode": "profile"
         },
         {
             "name": "front_end (release mode)",
             "request": "launch",
             "type": "dart",
+            "toolArgs": [
+                "--dart-define-from-file=.env"
+            ],
             "flutterMode": "release"
         },
         {
             "name": "Flutter (web)", // Puoi dare il nome che preferisci
             "request": "launch",
             "type": "dart",
-            // Aggiungi questa sezione "args"
+            "toolArgs": [
+                "--dart-define-from-file=.env"
+            ],
             "args": [
                 "--web-port",
                 "8000" // Scegli la porta che preferisci, es. 8000
@@ -34,6 +46,9 @@
         {
             "name": "Flutter (mobile)",
             "request": "launch",
+            "toolArgs": [
+                "--dart-define-from-file=.env"
+            ],
             "type": "dart"
             // Nota: questa configurazione non ha 'args', quindi non si applica agli emulatori
         }

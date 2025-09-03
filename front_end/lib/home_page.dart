@@ -1,26 +1,50 @@
-// Importa il pacchetto principale di Flutter per i widget Material Design.
 import 'package:flutter/material.dart';
+import 'package:frontend/services/auth_service.dart';
+// import 'package:frontend/profile_page.dart'; // Creeremo questo file dopo
+import 'package:provider/provider.dart';
 
-// HomePage è la prima schermata che l'utente vedrà.
+enum MenuAction { profile, logout }
+
 class HomePage extends StatelessWidget {
-  // Costruttore per il widget HomePage.
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Scaffold fornisce la struttura base per una schermata (app bar, body, etc.).
+    final authService = Provider.of<AuthService>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
-        // La barra in alto nell'applicazione.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Smart Wallet'),
+        title: const Text('Home Page'),
+        actions: [
+          PopupMenuButton<MenuAction>(
+            onSelected: (value) {
+              switch (value) {
+                case MenuAction.profile:
+                  // Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => const ProfilePage()));
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Pagina profilo da implementare')));
+                  break;
+                case MenuAction.logout:
+                  authService.logout();
+                  break;
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuAction>>[
+              const PopupMenuItem<MenuAction>(
+                value: MenuAction.profile,
+                child: Text('Profilo'),
+              ),
+              const PopupMenuItem<MenuAction>(
+                value: MenuAction.logout,
+                child: Text('Logout'),
+              ),
+            ],
+          )
+        ],
       ),
       body: const Center(
-        // Centra il suo contenuto (un widget Text) sia verticalmente che orizzontalmente.
-        child: Text(
-          'Benvenuto in Smart Wallet!',
-          style: TextStyle(fontSize: 22),
-        ),
+        child: Text('Login effettuato con successo!',
+            style: TextStyle(fontSize: 24)),
       ),
     );
   }

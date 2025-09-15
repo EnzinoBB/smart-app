@@ -1,4 +1,4 @@
-package com.smartwallet.backend.auth;
+package com.smartapp.backend.auth;
 
 // Questo DTO (Data Transfer Object) trasporta i dati per la registrazione.
 public class RegistrationRequest {

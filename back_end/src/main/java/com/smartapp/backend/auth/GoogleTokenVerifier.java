@@ -1,4 +1,4 @@
-package com.smartwallet.backend.auth;
+package com.smartapp.backend.auth;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;

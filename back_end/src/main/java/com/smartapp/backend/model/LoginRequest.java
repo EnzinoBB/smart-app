@@ -1,4 +1,4 @@
-package com.smartwallet.backend.model;
+package com.smartapp.backend.model;
 
 // Questa classe è un Data Transfer Object (DTO).
 // Il suo unico scopo è quello di modellare i dati in arrivo

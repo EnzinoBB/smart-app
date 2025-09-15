@@ -1,4 +1,4 @@
-package com.smartwallet.backend.service;
+package com.smartapp.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;

@@ -1,4 +1,4 @@
-package com.smartwallet.backend.service;
+package com.smartapp.backend.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -16,7 +16,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _surnameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   Future<void> _submit() async {
+    // La logica di business rimane invariata
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -25,9 +35,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
       final message = await authService.register(
-        _nameController.text,
-        _surnameController.text,
-        _emailController.text,
+        _nameController.text.trim(),
+        _surnameController.text.trim(),
+        _emailController.text.trim(),
         _passwordController.text,
       );
 
@@ -35,7 +45,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message), backgroundColor: Colors.green),
         );
-        Navigator.of(context).pop(); // Torna alla pagina di login
+        Navigator.of(context).pop();
       }
     } catch (e) {
       if (mounted) {
@@ -51,50 +61,117 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Registrazione')),
+      // Aggiungiamo un AppBar per coerenza e per permettere di tornare indietro
+      appBar: AppBar(
+        title: const Text('Create Account'),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextFormField(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
+          // --- INIZIO DELLA CORREZIONE ---
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+                maxWidth: 400), // Stesso vincolo della login page
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // --- SEZIONE HEADER ---
+                  const Icon(Icons.person_add_alt_1_rounded,
+                      size: 80, color: Colors.blue),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Get Started',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Create your account to continue',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Colors.grey[600]),
+                  ),
+                  const SizedBox(height: 40),
+
+                  // --- CAMPI DEL FORM ---
+                  TextFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(labelText: 'Nome'),
+                    decoration: InputDecoration(
+                        labelText: 'Name',
+                        prefixIcon: const Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12))),
                     validator: (val) =>
-                        val!.isEmpty ? 'Campo obbligatorio' : null),
-                const SizedBox(height: 12),
-                TextFormField(
+                        val!.trim().isEmpty ? 'Please enter your name' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
                     controller: _surnameController,
-                    decoration: const InputDecoration(labelText: 'Cognome'),
-                    validator: (val) =>
-                        val!.isEmpty ? 'Campo obbligatorio' : null),
-                const SizedBox(height: 12),
-                TextFormField(
+                    decoration: InputDecoration(
+                        labelText: 'Surname',
+                        prefixIcon: const Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12))),
+                    validator: (val) => val!.trim().isEmpty
+                        ? 'Please enter your surname'
+                        : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
                     controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Email'),
+                    decoration: InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: const Icon(Icons.email_outlined),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12))),
                     keyboardType: TextInputType.emailAddress,
-                    validator: (val) => !(val?.contains('@') ?? false)
-                        ? 'Email non valida'
-                        : null),
-                const SizedBox(height: 12),
-                TextFormField(
+                    validator: (val) => (val == null || !val.contains('@'))
+                        ? 'Please enter a valid email'
+                        : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(labelText: 'Password'),
+                    decoration: InputDecoration(
+                        labelText: 'Password',
+                        prefixIcon: const Icon(Icons.lock_outline_rounded),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12))),
                     obscureText: true,
-                    validator: (val) =>
-                        (val?.length ?? 0) < 6 ? 'Minimo 6 caratteri' : null),
-                const SizedBox(height: 20),
-                if (_isLoading)
-                  const Center(child: CircularProgressIndicator())
-                else
-                  ElevatedButton(
-                      onPressed: _submit, child: const Text('Registrati')),
-              ],
+                    validator: (val) => (val == null || val.length < 6)
+                        ? 'Password must be at least 6 characters'
+                        : null,
+                  ),
+                  const SizedBox(height: 24),
+                  if (_isLoading)
+                    const Center(child: CircularProgressIndicator())
+                  else
+                    ElevatedButton(
+                      onPressed: _submit,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('SIGN UP',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                    ),
+                ],
+              ),
             ),
           ),
+          // --- FINE DELLA CORREZIONE ---
         ),
       ),
     );

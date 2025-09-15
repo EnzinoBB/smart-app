@@ -1,4 +1,4 @@
-package com.smartwallet.backend.model;
+package com.smartapp.backend.model;
 
 import jakarta.persistence.*;
 

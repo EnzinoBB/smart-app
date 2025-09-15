@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       create: (ctx) => AuthService(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Smart Wallet',
+        title: 'Smart App',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,

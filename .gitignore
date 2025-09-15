@@ -45,6 +45,5 @@ app.*.map.json
 /android/app/release
 
 /config
-back_end/application.properties.bkp
 back_end/src/main/resources/application-secrets.properties
 front_end/.env

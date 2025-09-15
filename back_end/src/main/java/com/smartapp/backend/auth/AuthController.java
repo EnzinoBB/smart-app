@@ -1,11 +1,12 @@
-package com.smartwallet.backend.auth;
+package com.smartapp.backend.auth;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.smartwallet.backend.service.EmailService;
-import com.smartwallet.backend.service.JwtService; // Importa il nuovo servizio
-import com.smartwallet.backend.model.LoginRequest;
-import com.smartwallet.backend.model.User;
-import com.smartwallet.backend.repo.UserRepository;
+import com.smartapp.backend.model.LoginRequest;
+import com.smartapp.backend.model.User;
+import com.smartapp.backend.repo.UserRepository;
+import com.smartapp.backend.service.EmailService;
+import com.smartapp.backend.service.JwtService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

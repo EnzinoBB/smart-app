@@ -1,8 +1,8 @@
-package com.smartwallet.backend.repo;
+package com.smartapp.backend.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.smartwallet.backend.model.User;
+import com.smartapp.backend.model.User;
 
 import java.util.Optional;
 

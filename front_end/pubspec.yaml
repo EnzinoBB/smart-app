@@ -9,22 +9,26 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.2.1
-  google_sign_in: ^6.2.1
-  web: ^0.5.1
   
-  # NUOVE DIPENDENZE
-  provider: ^6.1.2 # Per la gestione dello stato
-  flutter_secure_storage: ^9.0.0 # Per memorizzare il token JWT in modo sicuro
-
+  # Versioni aggiornate
+  http: ^1.5.0
+  google_sign_in: ^7.2.0
+  web: ^1.1.1
+  
+  # Le altre dipendenze rimangono invariate
+  provider: ^6.1.2
+  flutter_secure_storage: ^9.0.0
+  
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  
+  # Versione aggiornata
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/google-logo.png
+    - assets/images/google_logo.png

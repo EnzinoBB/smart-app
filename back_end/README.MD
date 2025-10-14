@@ -21,7 +21,7 @@ This module contains the REST API for the Smart App application. It is built wit
 1.  **Java Development Kit (JDK)**: Version 17 or later (21 LTS is recommended).
 2.  **Apache Maven**: For dependency management and builds.
 3.  **MySQL Database**: A running instance of MySQL Server.
-    -   Ensure you have created an empty database named `smart_wallet_db`.
+    -   Ensure you have created an empty database named `smart_app_db`.
 
 ## ⚙️ Sensitive Data Configuration
 
@@ -39,7 +39,7 @@ The `application-secrets.properties` file is already included in the `.gitignore
 1.  **Open the Folder**: Open the `backend` folder directly in VS Code (or use the multi-root workspace).
 2.  **Install Extensions**: Make sure you have the `Extension Pack for Java` and `Spring Boot Extension Pack` installed.
 3.  **Start the Application**:
-    -   Navigate to the `src/main/java/com/smartwallet/backend/BackendApplication.java` file.
+    -   Navigate to the `src/main/java/com/smartapp/backend/BackendApplication.java` file.
     -   Click on **Debug** above the `main` method.
     -   The output will appear in the "TERMINAL" panel.
 

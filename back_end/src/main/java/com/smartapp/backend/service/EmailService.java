@@ -33,7 +33,7 @@ public class EmailService {
             
             // Imposta il destinatario, l'oggetto e il corpo dell'email.
             mailMessage.setTo(userEmail);
-            mailMessage.setSubject("Conferma la tua registrazione a Smart Wallet");
+            mailMessage.setSubject("Conferma la tua registrazione a Smart App");
             
             // Costruisce il link di conferma che l'utente dovrà cliccare.
             // NOTA: 'localhost:8080' è per lo sviluppo. In produzione,
@@ -41,7 +41,7 @@ public class EmailService {
             String confirmationUrl = "http://localhost:8080/api/auth/confirm?token=" + token;
             
             // Testo dell'email.
-            String messageText = "Grazie per esserti registrato a Smart Wallet!\n\n"
+            String messageText = "Grazie per esserti registrato a Smart App!\n\n"
                                + "Per favore, clicca sul link qui sotto per attivare il tuo account:\n"
                                + confirmationUrl + "\n\n"
                                + "Se non hai richiesto tu questa registrazione, per favore ignora questa email.";
